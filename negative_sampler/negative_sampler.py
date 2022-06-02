@@ -27,10 +27,7 @@ def negative_sampler(
     item_n = df['itemID'].nunique()
     
     print('making <user - item_set> df ...')
-    if use_pandarallel:
-      itemToList_df = df.groupby(col_user)['itemID'].parallel_apply(set).reset_index()
-    else:
-      itemToList_df = df.groupby(col_user)['itemID'].progress_apply(set).reset_index()
+    itemToList_df = df.groupby(col_user)['itemID'].progress_apply(set).reset_index()
 
     print('making <user:rated_item_set> dict ...')
     # {userID : 이미 interaction한 item set} dict 생성
@@ -43,10 +40,7 @@ def negative_sampler(
     item_time_min = df.loc[df[col_item_time]>0][col_item_time].min()
 
     print('making item_time point dict ...')
-    if use_pandarallel:
-      itemTimeToList_df = df.groupby(col_item_time)['itemID'].parallel_apply(set).reset_index()
-    else:
-      itemTimeToList_df = df.groupby(col_item_time)['itemID'].progress_apply(set).reset_index()
+    itemTimeToList_df = df.groupby(col_item_time)['itemID'].progress_apply(set).reset_index()
 
     get_min = np.vectorize(lambda x: min(x))
     time_break_dict = pd.Series(get_min(itemTimeToList_df['itemID'].values),
